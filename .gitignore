@@ -1,0 +1,6 @@
+dist/
+venv/
+env/
+src/__pycache__/
+src/psp_liquids_daq_parser.egg-info/
+
