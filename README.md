@@ -2,7 +2,7 @@
 
 Used to parse, convert, pickle, and pre-process TDMS files from BCLS or other NI daq boxes.
 
-Written in typed Python for easier linting (pref: ruff)
+Written in typed Python for easier linting (pref: ruff, default config)
 
 ## Installation
 
@@ -36,7 +36,37 @@ For example, if you had:
 
 ### Class: `DigitalChannelData`
 
+Stores a dataset of digital channel data. Has the following properties:
+- `data: NDArray[float64]`
+- `properties: OrderedDict`
+- `name: str`
+- `channelType: str`
+- `description: str`
+
+Is set/constructed by calling the class with the following required arguments: `DigitalChannelData(rawData: NDArray[float64], properties: OrderedDict, name: str, description: str, channel_type: str)`
+
+
 ### Class: `AnalogChannelData`
+
+Stores a dataset of analog channel data. Has the following properties:
+- `rawData: NDArray[float64]`
+- `data: NDArray[float64] = (rawData * slope) + zeroing_correction + offset`
+- `properties: OrderedDict`
+- `name: str`
+- `slope: float`
+- `offset: float`
+- `zeroing_target: float`
+- `zeroing_correction: float`
+- `description: str`
+- `units: str`
+- `channelType: str`
+- `constant_cjc: float`
+- `tc_type: str`
+- `min_v: float`
+- `max_v: float`
+
+
+Is set/constructed by calling the class with the following required arguments: `AnalogChannelData(rawData: NDArray[float64], properties: OrderedDict, name: str, slope: float, offset: float, zeroing_target: float, zeroing_correction: float, description: str, units: str, channelType: str, constant_cjc: float, tc_type: str, min_v: float, max_v: float`
 
 ## Matplotlib Example
 
@@ -173,3 +203,29 @@ if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port="80")
 
 ```
+
+## Updating this package
+
+After making the necessary code changes, simply push to github and [create a new release](https://github.com/Purdue-Space-Program/daq_parser/releases/new) with the next logical version number.
+
+> [!IMPORTANT]  
+> The version number must be of the format: `#.#.#` and cannot contain any letters. This is the version number that is used to upload to PyPi ([PyPi package link](https://pypi.org/project/psp-liquids-daq-parser/))
+
+### Detailed Steps
+
+To create a new release, first ensure you've committed/pushed/merged your code onto the `main` branch of the repo
+
+1. Open the [create a new release](https://github.com/Purdue-Space-Program/daq_parser/releases/new) page
+2. Near the top of the form, click on "Choose a tag"
+3. Type your new version number and then click `Create new tag: #.#.# on publish`
+4. Click `Generate release notes`
+5. Near the bottom fo the form, ensure the box labeled `Set as the latest release` is checked/enabled
+6. Click `Publish Release`
+
+After that, a GitHub Action will kick off to build and publish the new package version. Check on it's status [here](https://github.com/Purdue-Space-Program/daq_parser/actions) and click into each job/task to view logs.
+
+</br>
+</br>
+</br>
+
+###### Originally written by [Rajan Phadnis](https://github.com/rajanphadnis) for PSP-Liquids (CMS) ([contact](mailto:rajansd28@gmail.com))
