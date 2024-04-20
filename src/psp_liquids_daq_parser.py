@@ -1,15 +1,19 @@
+from numpy import float64
+from numpy.typing import NDArray
 from nptdms import TdmsFile, TdmsGroup
 import pickle
 import numpy as np
 import tkinter as tk
 from tkinter import filedialog
 import os
-from classes import AnalogChannelData, DigitalChannelData
+
+import pandas as pd
+from classes import AnalogChannelData, DigitalChannelData, SensorNetData
 from helpers import compileChannels, getTime
 
 def parseTDMS(
     dev_num: int, file_path_custom: str = "", dev_group: str = "Data (1000.000000 Hz)"
-) -> dict[str, AnalogChannelData | DigitalChannelData | list[float]]:
+) -> dict[str, AnalogChannelData | DigitalChannelData | SensorNetData | list[float]]:
     """## Parse a TDMS file (or an equivalent pickle file)
     ### Arguments:
     - `dev_num` (Type: `int`): dev box number (i.e: the `5` or `6` in dev5 or dev6)
@@ -35,13 +39,13 @@ def parseTDMS(
         print("unpickling...")
         with open(pickle_filepath, "rb") as f:
             unpickledData: dict[
-                str, AnalogChannelData | DigitalChannelData | list[float]
+                str, AnalogChannelData | DigitalChannelData | SensorNetData | list[float]
             ] = pickle.loads(f.read())
             print("unpickled data")
             return unpickledData
     else:
         channel_data_map: dict[
-            str, AnalogChannelData | DigitalChannelData | list[float]
+            str, AnalogChannelData | DigitalChannelData | SensorNetData | list[float]
         ] = {}
         tdms_file: TdmsFile = TdmsFile.read(filepath)
         group: TdmsGroup = tdms_file[dev_group]
@@ -57,8 +61,8 @@ def parseTDMS(
         return channel_data_map
 
 def extendDatasets(
-    channel_data: dict[str, AnalogChannelData | DigitalChannelData | list[float]], binary_channel_prefixes: tuple[str] = ("pi-", "reed-")
-) -> tuple[list[str], dict[str, AnalogChannelData | DigitalChannelData | list[float]]]:
+    channel_data: dict[str, AnalogChannelData | DigitalChannelData | SensorNetData | list[float]], binary_channel_prefixes: tuple[str] = ("pi-", "reed-")
+) -> tuple[list[str], dict[str, AnalogChannelData | DigitalChannelData | SensorNetData | list[float]]]:
     """## Extend combined datasets
     Basically makes all the datasets of all the channel the same length. Uses the numpy "edge" method for the time dataset. Uses constant values for channel data (o for analog data, 0.5 for binary data)
 
@@ -130,3 +134,56 @@ def extendDatasets(
             )
 
     return (available_channels, df_list_constant)
+
+def parseCSV(
+    file_path_custom: str = ""
+) -> dict[str, AnalogChannelData | DigitalChannelData | SensorNetData | list[float]]:
+    """## Parse a CSV file (or an equivalent pickle file)
+    ### Arguments:
+    - (Optional) `file_path_custom` (Type: `str`): the dynamic file path to a `.TDMS` file (use this in case you don't want to keep selecting the tdms file to parse every time you run the script)
+    ### Description
+    If `file_path_custom` isn't specified, the file picker dialog comes up to select a reduced csv file from sensornet. Then, we check to see if there's an equivalent pickle file in the same directory as the chosen csv file.
+    If there's a pickle file, we parse that. Otherwise, we parse the csv file and save the resulting object to a pickle file for later.
+    """
+    if file_path_custom == "":
+        root = tk.Tk()
+        root.withdraw()
+        filepath: str = filedialog.askopenfilename(
+            initialdir="./", title="Choose Reduced Sensornet CSV file"
+        )
+        print(
+            f'to skip the filepicker, use "parseCSV(file_path_custom=\"{filepath}\")"'
+        )
+    else:
+        filepath = file_path_custom
+    pickle_filepath: str = filepath[:-4] + ".pickle"
+    if os.path.exists(pickle_filepath):
+        print("unpickling...")
+        with open(pickle_filepath, "rb") as f:
+            unpickledData: dict[
+                str, AnalogChannelData | DigitalChannelData | SensorNetData | list[float]
+            ] = pickle.loads(f.read())
+            print("unpickled data")
+            return unpickledData
+    else:
+        channel_data_map: dict[
+            str, AnalogChannelData | DigitalChannelData | SensorNetData | list[float]
+        ] = {}
+
+        df: pd.DataFrame = pd.read_csv(filepath)
+        channel_names: list[str] = df.columns.to_list()
+        df[channel_names] = df[channel_names].astype('float64')
+        for i in range(1,len(channel_names),2):
+            channel: str = channel_names[i]
+            timeArray: NDArray[float64] = df.iloc[:,i-1].to_numpy()
+            dataArray: NDArray[float64] = df.iloc[:,i].to_numpy()
+            channel_data_map[channel] = SensorNetData(channel, timeArray, dataArray)
+
+        # channel_data_map["time"] = getTime(channel_data_map, dev_group)
+        with open(pickle_filepath, "wb") as f:
+            pickle.dump(channel_data_map, f, pickle.HIGHEST_PROTOCOL)
+        print(
+            f'conversion done!\n\n\nNext time you want to run the converter, consider calling the function with: "parseCSV(file_path_custom=\"{pickle_filepath[:-7] + ".tdms"}\")"'
+        )
+        return channel_data_map
+

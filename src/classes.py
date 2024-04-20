@@ -130,3 +130,19 @@ class AnalogChannelData:
     @property
     def max_v(self) -> float:
         return self._max_v
+
+class SensorNetData:
+    def __init__(self, name: str, rawTime: NDArray[float64], rawData: NDArray[float64]):
+        self._rawData = rawData
+        self._name = name
+        self._rawTime = rawTime
+    @property
+    def data(self) -> NDArray[float64]:
+        return self._rawData
+    @property
+    def time(self) -> NDArray[float64]:
+        return self._rawTime
+    @property
+    def name(self) -> str:
+        return self._name
+
