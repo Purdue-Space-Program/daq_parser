@@ -14,7 +14,10 @@ There are two functions and two classes that come with this package:
 
 ### Function: `parseTDMS`:
 
+`start_time_unix_ms` defines the start time of the TDMS file in milliseconds since the UNIX epoch. This is a required argument, and offsets the TDMS time data with the given start time converted to seconds.
+
 If `file_path_custom` isn't specified, the file picker dialog comes up to select a tdms file. Then, we check to see if there's an equivalent pickle file in the same directory as the chosen tdms file.
+
 If there's a pickle file, we parse that. Otherwise, we parse the TDMS file and save the resulting object to a pickle file for later.
 
 ### Function: `extendDatasets`

@@ -47,12 +47,13 @@ def compileChannels(
 
 
 def getTime(
-    channel_data: dict[str, AnalogChannelData | DigitalChannelData], group_name: str
+    channel_data: dict[str, AnalogChannelData | DigitalChannelData], group_name: str, start_time_unix_ms: int
 ) -> list[float]:
     samples: int = channel_data[next(iter(channel_data))].rawData.size
     pattern: str = r"\(([^()]+)\)"
     match: re.Match = re.search(pattern, group_name)
     sample_rate: float = float(match.group(1)[:-3])
     dt: float = 1 / sample_rate
-    time: list[float] = np.arange(0, samples * dt, dt).tolist()
+    addedtime = np.arange(0, samples * dt, dt) + (start_time_unix_ms/1000)
+    time: list[float] = addedtime.tolist()
     return time
