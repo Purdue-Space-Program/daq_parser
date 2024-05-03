@@ -9,7 +9,7 @@ import os
 
 import pandas as pd
 from classes import AnalogChannelData, DigitalChannelData, SensorNetData
-from helpers import compileChannels, getTime
+from helpers import compileChannels, convertStringTimestamp, getTime
 
 def parseTDMS(
     dev_num: int, start_time_unix_ms: int, file_path_custom: str = "", dev_group: str = "Data (1000.000000 Hz)"
@@ -137,7 +137,7 @@ def extendDatasets(
     return (available_channels, df_list_constant)
 
 def parseCSV(
-    start_time_unix_ms: int, file_path_custom: str = ""
+    start_time_unix_ms: int = 0, file_path_custom: str = ""
 ) -> dict[str, SensorNetData]:
     """## Parse a CSV file (or an equivalent pickle file)
     ### Arguments:
@@ -174,6 +174,10 @@ def parseCSV(
 
         df: pd.DataFrame = pd.read_csv(filepath)
         channel_names: list[str] = df.columns.to_list()
+        print("converting timestamps...")
+        for channel_name in channel_names:
+            if "_time" in channel_name and "-" in str(df[channel_name][3]):
+                df[channel_name] = df[channel_name].apply(lambda x: convertStringTimestamp(x, "UTC"))
         df[channel_names] = df[channel_names].astype('float64')
         for i in range(1,len(channel_names),2):
             channel: str = channel_names[i]

@@ -1,7 +1,11 @@
+from datetime import datetime
 import re
+
+import pytz
 from classes import AnalogChannelData, DigitalChannelData
 from nptdms import TdmsChannel
 import numpy as np
+import pandas as pd
 
 def compileChannels(
     channels: list[TdmsChannel],
@@ -57,3 +61,16 @@ def getTime(
     addedtime = np.arange(0, samples * dt, dt) + (start_time_unix_ms/1000)
     time: list[float] = addedtime.tolist()
     return time
+
+
+def convertStringTimestamp(data, fromTimezone):
+    if (str(data) == "nan"):
+        return data
+    test_date = data.split("+")
+    thing = datetime.strptime(test_date[0], "%Y-%m-%d %H:%M:%S.%f")
+    old_timezone = pytz.timezone(fromTimezone)
+    new_timezone = pytz.timezone("US/Eastern")
+    localized_timestamp = old_timezone.localize(thing)
+    new_timezone_timestamp = localized_timestamp.astimezone(new_timezone)
+    ms = new_timezone_timestamp.timestamp()
+    return ms
