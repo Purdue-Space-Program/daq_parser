@@ -131,8 +131,11 @@ def extendDatasets(
             df = merged_df
             available_channels.append(dataset)
             print("extended: " + dataset)
-
-    return (available_channels, df.to_dict("list"))
+    max_length = len(df.index)
+    print("packaging datasets...")
+    dict_from_df = df.to_dict("list")
+    print("finished packaging datasets")
+    return (available_channels, max_length, dict_from_df)
 
 def parseCSV(
     start_time_unix_ms: int = 0, file_path_custom: str = ""
