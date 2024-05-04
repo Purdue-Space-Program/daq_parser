@@ -98,43 +98,39 @@ def extendDatasets(
         if channel != "time" and len(channel_data[channel].data) > total_length:
             total_length = len(channel_data[channel].data)
 
-    # for each channel, pad the end of that channel's dataset with some value to
-    # make all the channel's data the same length and simeltaneously convert it all to np arrays
-    df_list_constant = {}
-    time: list[float] = channel_data["time"]
-    df_list_constant.update(
-        {"time": np.pad(time, (0, total_length - len(time)), "edge")}
-    )
-    for channel in available_channels:
-        # for binary channels, make the padding value 0.5 to make it easy to identify which data is to be ignored
-        if channel.startswith(binary_channel_prefixes):
-            df_list_constant.update(
+    first_time: float = channel_data["time"][0]
+    last_time: float = channel_data["time"][-1]
+    available_channels = []
+    df = pd.DataFrame.from_dict({"time": channel_data["time"]})
+    for dataset in channel_data:
+        if dataset != "time":
+            new_data = np.array(channel_data[dataset].data.tolist())
+            temp_time = channel_data["time"][:len(new_data)]
+            if(hasattr(channel_data[dataset], "time")):
+                temp_time = np.array(channel_data[dataset].time.tolist())
+            new_df = pd.DataFrame.from_dict(
                 {
-                    channel: np.pad(
-                        channel_data[channel].data,
-                        (0, total_length - len(channel_data[channel].data)),
-                        "constant",
-                        constant_values=(
-                            0.5,
-                            0.5,
-                        ),
-                    )
+                    "temp_time": temp_time,
+                    dataset: new_data,
                 }
             )
-        # for all other channels, set the padding value to zero
-        elif channel != "time":
-            df_list_constant.update(
-                {
-                    channel: np.pad(
-                        channel_data[channel].data,
-                        (0, total_length - len(channel_data[channel].data)),
-                        "constant",
-                        constant_values=(0, 0),
-                    )
-                }
+            new_df.drop(new_df[new_df['temp_time'] < first_time].index, inplace=True)
+            new_df.drop(new_df[new_df['temp_time'] > last_time].index, inplace=True)
+            new_df.dropna(inplace=True)
+            merged_df = pd.merge_asof(
+                df.sort_values("time"),
+                new_df.sort_values("temp_time"),
+                left_on="time",
+                right_on="temp_time",
+                direction="nearest",
+                tolerance=5
             )
+            merged_df.drop("temp_time", axis=1, inplace=True)
+            df = merged_df
+            available_channels.append(dataset)
+            print("extended: " + dataset)
 
-    return (available_channels, df_list_constant)
+    return (available_channels, df.to_dict("list"))
 
 def parseCSV(
     start_time_unix_ms: int = 0, file_path_custom: str = ""
@@ -193,3 +189,10 @@ def parseCSV(
         )
         return channel_data_map
 
+def addDatasetsToTimeperiod(existing: dict[str, AnalogChannelData | DigitalChannelData | SensorNetData | list[float]], to_add: dict[str, AnalogChannelData | DigitalChannelData | SensorNetData | list[float]]):
+    if (len(existing["time"]) > len(to_add["time"])):
+        to_add.update(existing)
+        return to_add
+    else:
+        existing.update(to_add)
+        return existing
