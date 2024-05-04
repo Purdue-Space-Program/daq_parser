@@ -9,10 +9,10 @@ import os
 
 import pandas as pd
 from classes import AnalogChannelData, DigitalChannelData, SensorNetData
-from helpers import compileChannels, convertStringTimestamp, getTime
+from helpers import compileChannels, convertStringTimestamp, getTime, tdmsFilenameToSeconds
 
 def parseTDMS(
-    dev_num: int, start_time_unix_ms: int, file_path_custom: str = "", dev_group: str = "Data (1000.000000 Hz)"
+    dev_num: int, start_time_unix_ms: int = 0, file_path_custom: str = "", dev_group: str = "Data (1000.000000 Hz)"
 ) -> dict[str, AnalogChannelData | DigitalChannelData | SensorNetData | list[float]]:
     """## Parse a TDMS file (or an equivalent pickle file)
     ### Arguments:
@@ -53,6 +53,8 @@ def parseTDMS(
         dev5_channels = compileChannels(group.channels())
         channel_data_map.update(dev5_channels[0])
         channel_data_map.update(dev5_channels[1])
+        if (start_time_unix_ms == 0):
+            start_time_unix_ms = tdmsFilenameToSeconds(os.path.basename(filepath)) * 1000
         channel_data_map["time"] = getTime(channel_data_map, dev_group, start_time_unix_ms)
         with open(pickle_filepath, "wb") as f:
             pickle.dump(channel_data_map, f, pickle.HIGHEST_PROTOCOL)
@@ -189,7 +191,7 @@ def parseCSV(
         )
         return channel_data_map
 
-def addDatasetsToTimeperiod(existing: dict[str, AnalogChannelData | DigitalChannelData | SensorNetData | list[float]], to_add: dict[str, AnalogChannelData | DigitalChannelData | SensorNetData | list[float]]):
+def combineTDMSDatasets(existing: dict[str, AnalogChannelData | DigitalChannelData | SensorNetData | list[float]], to_add: dict[str, AnalogChannelData | DigitalChannelData | SensorNetData | list[float]]):
     if (len(existing["time"]) > len(to_add["time"])):
         to_add.update(existing)
         return to_add

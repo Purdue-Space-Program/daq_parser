@@ -1,5 +1,6 @@
 from datetime import datetime
 import re
+import time
 
 import pytz
 from classes import AnalogChannelData, DigitalChannelData
@@ -74,3 +75,9 @@ def convertStringTimestamp(data, fromTimezone):
     new_timezone_timestamp = localized_timestamp.astimezone(new_timezone)
     ms = new_timezone_timestamp.timestamp()
     return ms
+
+def tdmsFilenameToSeconds(filename: str):
+    time_stamp_str = filename[8:25]
+    datetimeObj = datetime.strptime(time_stamp_str, "%Y-%m%d-%H%M-%S")
+    dateString = time.mktime(datetimeObj.timetuple())
+    return int(dateString)
