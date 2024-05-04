@@ -65,7 +65,7 @@ def parseTDMS(
 
 def extendDatasets(
     channel_data: dict[str, AnalogChannelData | DigitalChannelData | SensorNetData | list[float]], binary_channel_prefixes: tuple[str] = ("pi-", "reed-")
-) -> tuple[list[str], dict[str, list[float]]]:
+) -> tuple[list[str], int, dict[str, list[float]]]:
     """## Extend combined datasets
     Basically makes all the datasets of all the channel the same length. Uses the numpy "edge" method for the time dataset. Uses constant values for channel data (o for analog data, 0.5 for binary data)
 
@@ -89,6 +89,7 @@ def extendDatasets(
     - (Optional) `binary_channel_prefixes` (Type: `tuple[str]`): The channel name prefixes that indicate if the channel is a binary output channel
     ### Outputs (`tuple`)
     - `list[str]`: the list of all channel names that were provided
+    - `int`: max length of datasets
     - `dict[str, AnalogChannelData | DigitalChannelData | list[float]]`: the extended data in the same format as outputted by `parseTDMS`
     """
     # get all the available channel names
