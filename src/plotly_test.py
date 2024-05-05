@@ -11,7 +11,8 @@ import plotly.graph_objects as go
 
 data_datasets: dict[str, list[float]] = []
 
-if (os.path.exists('all_channels.pickle')):
+# if (os.path.exists('all_channels.pickle')):
+if False:
     print("unpickling expanded datasets...")
     with open("all_channels.pickle", "rb") as f:
                 data_datasets = pickle.loads(f.read())

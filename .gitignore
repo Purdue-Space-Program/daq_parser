@@ -4,3 +4,9 @@ env/
 src/__pycache__/
 src/psp_liquids_daq_parser.egg-info/
 
+src/DataLog_2024-0430-2328-01_CMS_Data_Wiring_5.pickle
+src/DataLog_2024-0430-2328-01_CMS_Data_Wiring_5.tdms
+src/DataLog_2024-0430-2328-01_CMS_Data_Wiring_6.tdms
+src/timestamped_bangbang_data.pickle
+src/DataLog_2024-0430-2328-01_CMS_Data_Wiring_6.pickle
+src/timestamped_bangbang_data.csv

@@ -3,7 +3,7 @@ from numpy.typing import NDArray
 from nptdms import TdmsFile, TdmsGroup
 import pickle
 import numpy as np
-import tkinter as tk
+# import tkinter as tk
 from tkinter import filedialog
 import os
 
@@ -25,8 +25,8 @@ def parseTDMS(
     If there's a pickle file, we parse that. Otherwise, we parse the TDMS file and save the resulting object to a pickle file for later.
     """
     if file_path_custom == "":
-        root = tk.Tk()
-        root.withdraw()
+        # root = tk.Tk()
+        # root.withdraw()
         filepath: str = filedialog.askopenfilename(
             initialdir="./", title="Choose Dev" + str(dev_num) + " TDMS file"
         )
@@ -150,8 +150,8 @@ def parseCSV(
     If there's a pickle file, we parse that. Otherwise, we parse the csv file and save the resulting object to a pickle file for later.
     """
     if file_path_custom == "":
-        root = tk.Tk()
-        root.withdraw()
+        # root = tk.Tk()
+        # root.withdraw()
         filepath: str = filedialog.askopenfilename(
             initialdir="./", title="Choose Reduced Sensornet CSV file"
         )
