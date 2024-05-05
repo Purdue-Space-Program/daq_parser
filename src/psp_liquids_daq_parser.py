@@ -4,7 +4,7 @@ from nptdms import TdmsFile, TdmsGroup
 import pickle
 import numpy as np
 # import tkinter as tk
-from tkinter import filedialog
+# from tkinter import filedialog
 import os
 
 import pandas as pd
@@ -27,11 +27,11 @@ def parseTDMS(
     if file_path_custom == "":
         # root = tk.Tk()
         # root.withdraw()
-        filepath: str = filedialog.askopenfilename(
-            initialdir="./", title="Choose Dev" + str(dev_num) + " TDMS file"
-        )
+        # filepath: str = filedialog.askopenfilename(
+        #     initialdir="./", title="Choose Dev" + str(dev_num) + " TDMS file"
+        # )
         print(
-            f'to skip the filepicker, use "parseTDMS({dev_num}, file_path_custom={filepath})"'
+            f'to skip the filepicker, use "parseTDMS({dev_num}, file_path_custom=)"'
         )
     else:
         filepath = file_path_custom
@@ -152,11 +152,11 @@ def parseCSV(
     if file_path_custom == "":
         # root = tk.Tk()
         # root.withdraw()
-        filepath: str = filedialog.askopenfilename(
-            initialdir="./", title="Choose Reduced Sensornet CSV file"
-        )
+        # filepath: str = filedialog.askopenfilename(
+        #     initialdir="./", title="Choose Reduced Sensornet CSV file"
+        # )
         print(
-            f'to skip the filepicker, use "parseCSV(file_path_custom=\"{filepath}\")"'
+            'to skip the filepicker, use "parseCSV(file_path_custom=)"'
         )
     else:
         filepath = file_path_custom
