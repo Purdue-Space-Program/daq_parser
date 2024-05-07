@@ -79,6 +79,6 @@ def convertStringTimestamp(data, fromTimezone):
 def tdmsFilenameToSeconds(filename: str):
     time_stamp_str = filename[8:25]
     datetimeObj = datetime.strptime(time_stamp_str, "%Y-%m%d-%H%M-%S")
-    datetimeObj.replace(tzinfo=pytz.utc)
+    datetimeObj.replace(tzinfo=pytz.timezone("US/Eastern"))
     dateString = time.mktime(datetimeObj.timetuple())
     return int(dateString)
