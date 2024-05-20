@@ -40,6 +40,8 @@ def run():
     test_id: str = "ID"
     test_article: str = "CMS"
     gse_article: str = "BCLS"
+    trim_to_s: int = 10
+    max_entries_per_sensor: int = 4500
     # url_pairs: list[str] = [
     #     "https://drive.google.com/file/d/10M68NfEW9jlU1XMyv5ubRzIoKsWTQ_MY/view?usp=drive_link",
     #     "https://drive.google.com/file/d/1SKDAxE1udwTQtjbmGNZapU4nRv1hGNZT/view?usp=drive_link",
@@ -82,11 +84,15 @@ def run():
             data: list[float] = data_as_dict[dataset]
             time: list[float] = all_time[: len(data)]
             df = pd.DataFrame.from_dict({"time": time, "data": data})
-            # df_cut = df.head(15*1000)
-            thing = df.iloc[:: math.ceil(max_length / 4000), :]
-            # print("writing csv...")
-            # df.to_csv(dataset+".csv", lineterminator="\n",index=False)
-
+            if trim_to_s == 0:
+                print("not trimming")
+                processed_df = df.iloc[:: math.ceil(max_length / max_entries_per_sensor), :]
+            else:
+                df_cut = df.head(trim_to_s * 1000)
+                max_length = len(df_cut.index)
+                trim_to_freq = math.ceil(max_length / max_entries_per_sensor)
+                print("Trimming to every x samples: " + str(trim_to_freq))
+                processed_df = df_cut.iloc[::trim_to_freq, :]
             scale = "psi"
             if "tc" in dataset:
                 scale = "deg"

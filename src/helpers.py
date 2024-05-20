@@ -78,7 +78,11 @@ def convertStringTimestamp(data, fromTimezone):
 
 def tdmsFilenameToSeconds(filename: str):
     time_stamp_str = filename[8:25]
-    datetimeObj = datetime.strptime(time_stamp_str, "%Y-%m%d-%H%M-%S")
-    datetimeObj.replace(tzinfo=pytz.timezone("US/Eastern"))
-    dateString = time.mktime(datetimeObj.timetuple())
-    return int(dateString)
+    datetimeObj = datetime.strptime(time_stamp_str, "%Y-%m%d-%H%M-%S").replace(tzinfo=pytz.timezone("US/Eastern")).astimezone(pytz.utc)
+    # fmt = '%Y-%m-%d %H:%M:%S %Z (%z)'
+    # print(datetimeObj.strftime(fmt))
+    # print(datetimeObj.timestamp())
+    # dateString = time.mktime(datetimeObj.astimezone(pytz.timezone("US/Eastern")).timetuple())
+    return int(datetimeObj.timestamp())
+
+# print(tdmsFilenameToSeconds("DataLog_2024-0430-2328-01_CMS_Data_Wiring_5.tdms"))
