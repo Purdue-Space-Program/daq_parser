@@ -117,9 +117,9 @@ def extendDatasets(
                     dataset: new_data,
                 }
             )
-            new_df.drop(new_df[new_df['temp_time'] < first_time].index, inplace=True)
-            new_df.drop(new_df[new_df['temp_time'] > last_time].index, inplace=True)
-            new_df.dropna(inplace=True)
+            # new_df.drop(new_df[new_df['temp_time'] < first_time].index, inplace=True)
+            # new_df.drop(new_df[new_df['temp_time'] > last_time].index, inplace=True)
+            # new_df.dropna(inplace=True)
             merged_df = pd.merge_asof(
                 df.sort_values("time"),
                 new_df.sort_values("temp_time"),

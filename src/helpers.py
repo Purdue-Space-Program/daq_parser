@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 import time
 
@@ -78,7 +78,14 @@ def convertStringTimestamp(data, fromTimezone):
 
 def tdmsFilenameToSeconds(filename: str):
     time_stamp_str = filename[8:25]
-    datetimeObj = datetime.strptime(time_stamp_str, "%Y-%m%d-%H%M-%S").replace(tzinfo=pytz.timezone("US/Eastern")).astimezone(pytz.utc)
+    year = int(time_stamp_str[0:4])
+    month = int(time_stamp_str[5:7])
+    day = int(time_stamp_str[7:9])
+    hour = int(time_stamp_str[10:12])
+    minute = int(time_stamp_str[12:14])
+    second = int(time_stamp_str[15:])
+    datetimeObj = datetime(year, month, day, hour, minute, second, tzinfo=pytz.utc) + timedelta(hours=4)
+    # datetimeObj = datetime.strptime(time_stamp_str[0:12] + ":" + time_stamp_str[12:], "%Y-%m%d-%H:%M-%S").replace(tzinfo=pytz.timezone("US/Eastern")).astimezone(pytz.utc)
     # fmt = '%Y-%m-%d %H:%M:%S %Z (%z)'
     # print(datetimeObj.strftime(fmt))
     # print(datetimeObj.timestamp())
