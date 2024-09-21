@@ -12,7 +12,7 @@ from classes import AnalogChannelData, DigitalChannelData, SensorNetData
 from helpers import compileChannels, convertStringTimestamp, getTime, tdmsFilenameToSeconds
 
 def parseTDMS(
-    dev_num: int, start_time_unix_ms: int = 0, file_path_custom: str = "", dev_group: str = "Data (1000.000000 Hz)"
+    dev_num: int, start_time_unix_ms: int = 0, file_path_custom: str = "", dev_group: str = "NONE"
 ) -> dict[str, AnalogChannelData | DigitalChannelData | SensorNetData | list[float]]:
     """## Parse a TDMS file (or an equivalent pickle file)
     ### Arguments:
@@ -49,7 +49,10 @@ def parseTDMS(
             str, AnalogChannelData | DigitalChannelData | SensorNetData | list[float]
         ] = {}
         tdms_file: TdmsFile = TdmsFile.read(filepath)
-        group: TdmsGroup = tdms_file[dev_group]
+        if dev_group == "NONE":
+            group: TdmsGroup = tdms_file.groups()[0].name
+        else:
+            group: TdmsGroup = tdms_file[dev_group]
         dev5_channels = compileChannels(group.channels())
         channel_data_map.update(dev5_channels[0])
         channel_data_map.update(dev5_channels[1])

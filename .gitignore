@@ -17,3 +17,4 @@ src/DataLog_2024-0501-0031-41_CMS_Data_Wiring_6.tdms
 src/test_run_all.csv
 src/test_run_whoopsie.csv
 src/*.hdf5
+src/DataLog_2021-1107-1622-03_BZB_Data_Wiring_5.tdms

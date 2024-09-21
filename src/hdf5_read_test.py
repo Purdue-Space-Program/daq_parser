@@ -16,12 +16,12 @@ import matplotlib.pyplot as plt
 # df = pd.DataFrame()
 # avgPerfTime = []
 
-with h5py.File("zggWCpa.hdf5", "r") as f:
+with h5py.File("Kh8celn.hdf5", "r") as f:
     # channel_to_fetch.append("time")
     # datasets = list(f.keys())
     # print(datasets)
     print(f["time"][:])
-    plt.plot(f["time"][:], f["fu_psi__psi__"][:])
+    # plt.plot(f["time"][:], f["fu_psi__psi__"][:])
     plt.plot(f["time"][:], f["fms__lbf__"][:])
     plt.show()
     # for dataset in channel_to_fetch:
