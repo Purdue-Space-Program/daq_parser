@@ -50,7 +50,8 @@ def parseTDMS(
         ] = {}
         tdms_file: TdmsFile = TdmsFile.read(filepath)
         if dev_group == "NONE":
-            group: TdmsGroup = tdms_file.groups()[0]
+            dev_group = tdms_file.groups()[0].name
+            group: TdmsGroup = tdms_file[dev_group]
         else:
             group: TdmsGroup = tdms_file[dev_group]
         dev5_channels = compileChannels(group.channels())
